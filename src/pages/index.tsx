@@ -4,7 +4,7 @@ import Layout from "../components/Layout";
 
 const IndexPage: NextPage = () => {
   return (
-    <Layout useBackdrop={false}>
+    <Layout usePadding={false}>
       <Auth />
     </Layout>
   );
