@@ -3,28 +3,49 @@ import { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
 import { client } from "../../client";
 import Router from "next/router";
 import { ROUTE_AUTH, ROUTE_HOME } from "../../utils/constants";
+import { UserCredentials } from "@supabase/gotrue-js";
 
 export type AuthContextProps = {
   user: User | null;
-  // loading: boolean;
+  loading: boolean;
   userLoading: boolean;
   loggedIn: boolean;
+  signIn: (payload: UserCredentials) => void;
   signOut: () => Promise<unknown>;
 };
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
-  // loading: false,
+  loading: false,
   userLoading: false,
   loggedIn: false,
+  signIn: async () => {},
   signOut: async () => {},
 });
 
 export const AuthProvider: FC = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  // const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [userLoading, setUserLoading] = useState(true);
   const [loggedIn, setLoggedin] = useState(false);
+
+  const signIn = async (payload: UserCredentials) => {
+    try {
+      setLoading(true);
+      const { error } = await client.auth.signIn(payload);
+      if (error) {
+        alert(error.message);
+      } else {
+        alert("Please check your email for the magic link");
+      }
+    } catch (error) {
+      alert({
+        message: error,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const signOut = async (): Promise<unknown> => await client.auth.signOut();
 
@@ -75,9 +96,10 @@ export const AuthProvider: FC = ({ children }) => {
 
   const value = {
     user,
-    // loading,
+    loading,
     userLoading,
     loggedIn,
+    signIn,
     signOut,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

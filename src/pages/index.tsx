@@ -1,11 +1,12 @@
 import Auth from "../components/Auth";
 import { NextPage } from "next";
+import Layout from "../components/Layout";
 
 const IndexPage: NextPage = () => {
   return (
-    <div className="container" style={{ padding: "50px 0 100px 0" }}>
+    <Layout useBackdrop={false}>
       <Auth />
-    </div>
+    </Layout>
   );
 };
 

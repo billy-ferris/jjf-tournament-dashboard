@@ -1,27 +1,13 @@
-import { FC, ReactElement, useState } from "react";
-import { client } from "../client";
-import { UserCredentials } from "@supabase/gotrue-js";
+import { FC, FormEvent, ReactElement, useState } from "react";
+import { useAuth } from "../lib/auth";
 
 const Auth: FC = (): ReactElement => {
-  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const { loading, signIn } = useAuth();
 
-  const handleLogin = async (payload: UserCredentials) => {
-    try {
-      setLoading(true);
-      const { error } = await client.auth.signIn(payload);
-      if (error) {
-        alert(error.message);
-      } else {
-        alert("Please check your email for the magic link");
-      }
-    } catch (error) {
-      alert({
-        message: error,
-      });
-    } finally {
-      setLoading(false);
-    }
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    await signIn({ email });
   };
 
   return (
@@ -42,10 +28,7 @@ const Auth: FC = (): ReactElement => {
         </div>
         <div>
           <button
-            onClick={async (e) => {
-              e.preventDefault();
-              await handleLogin({ email });
-            }}
+            onClick={handleSubmit}
             className="button block"
             disabled={loading}
           >

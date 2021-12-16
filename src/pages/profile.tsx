@@ -1,24 +1,12 @@
-import { useEffect } from "react";
 import { GetServerSideProps } from "next";
-import Router from "next/router";
-import { client } from "../client";
-import { useAuth } from "../lib/auth/useAuth";
 import Layout from "../components/Layout";
-// import { SpinnerFullPage } from "~/components/Spinner";
-import { ROUTE_AUTH } from "../utils/constants";
-import { NextAppPageServerSideProps } from "../types/app";
+import { useAuthWithRedir, ProtectedRoute } from "../lib/auth";
 
-const ProfilePage = () => {
-  const { user, userLoading, signOut, loggedIn } = useAuth();
-
-  useEffect(() => {
-    if (!userLoading && !loggedIn) {
-      Router.push(ROUTE_AUTH);
-    }
-  }, [userLoading, loggedIn]);
+const ProfilePage = (/* props from SSR */) => {
+  const { user, signOut } = useAuthWithRedir();
 
   // if (userLoading) {
-  //   return <SpinnerFullPage />;
+  //   return <FullPageSpinner />;
   // }
 
   return (
@@ -43,40 +31,9 @@ const ProfilePage = () => {
   );
 };
 
+export const getServerSideProps: GetServerSideProps = (context) =>
+  ProtectedRoute({
+    context,
+  });
+
 export default ProfilePage;
-
-// Fetch user data server-side to eliminate a flash of unauthenticated content.
-// We're identifying the logged-in user through supabase cookies and either redirecting to  `/` if the user is not found, or sending the `user` and `loggedIn` props which can be available to the above component through `props`.
-export const getServerSideProps: GetServerSideProps = async ({
-  req,
-}): Promise<NextAppPageServerSideProps> => {
-  const { user } = await client.auth.api.getUserByCookie(req);
-  // We can do a re-direction from the server
-  if (!user) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-  // or, alternatively, can send the same values that client-side context populates to check on the client and redirect
-  // The following lines won't be used as we're redirecting above
-  return {
-    props: {
-      user,
-      loggedIn: !!user,
-    },
-  };
-};
-
-// As there could be many pages that'll be required to be rendered only for the logged-in users, and the above logic
-// for indetifying authenticity could become repetitive, there's a wrapper component `ProtectedRoute` already available
-// that could be used like
-/*
-export const getServerSideProps: GetServerSideProps = (context) => ProtectedRoute({ context, getPropsFunc: async (options) => {
-    return {
-        'more': 'data'
-    }
-}})
-*/
