@@ -1,7 +1,7 @@
-import { FC, FormEvent, ReactElement, useState } from "react";
+import { FC, FormEvent, useState } from "react";
 import { useAuth } from "../lib/auth";
 
-const Auth: FC = (): ReactElement => {
+const Auth: FC = () => {
   const [email, setEmail] = useState("");
   const { loading, signIn } = useAuth();
 

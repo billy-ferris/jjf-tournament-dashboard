@@ -1,8 +1,8 @@
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import Layout from "../components/Layout";
 import { useAuthWithRedir, ProtectedRoute } from "../lib/auth";
 
-const ProfilePage = (/* props from SSR */) => {
+const ProfilePage: NextPage = (/* props from SSR */) => {
   const { user, signOut } = useAuthWithRedir();
 
   // if (userLoading) {
