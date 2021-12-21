@@ -2,7 +2,7 @@ import { useEffect, useState, createContext, FC } from "react";
 import { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
 import { client } from "../../client";
 import Router from "next/router";
-import { ROUTE_AUTH, ROUTE_HOME } from "../../utils/constants";
+import { ROUTE_AUTH, ROUTE_HOME } from "../../config";
 import { UserCredentials } from "@supabase/gotrue-js";
 
 export type AuthContextProps = {

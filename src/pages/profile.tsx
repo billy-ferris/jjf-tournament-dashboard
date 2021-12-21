@@ -3,12 +3,8 @@ import Link from "next/link";
 import Layout from "../components/Layout";
 import { ProtectedRoute, useAuth } from "../lib/auth";
 
-const ProfilePage: NextPage = (/* props from SSR */) => {
+const ProfilePage: NextPage = (/* props: props from SSR */) => {
   const { user, signOut } = useAuth();
-
-  // if (userLoading) {
-  //   return <FullPageSpinner />;
-  // }
 
   return (
     <Layout useBackdrop={false}>

@@ -82,7 +82,7 @@ const IndexPage: NextPage = () => {
                     Supabase + Next.js
                   </h2>
                   <p className="mt-6 mx-auto max-w-2xl text-xl sm:text-2xl text-indigo-200">
-                    Sign in via magic link with your email below. No need
+                    Sign in via magic link with your email below. No need for
                     passwords around here anymore.
                   </p>
                 </div>
