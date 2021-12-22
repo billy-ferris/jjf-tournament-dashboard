@@ -16,10 +16,7 @@ async function verifyAuth(request: NextRequest) {
   const token = request.cookies[SUPABASE_TOKEN];
 
   // Obtain JWT Secret from Supabase dashboard - 'Settings' -> 'API' -> 'Config' -> 'JWT Secret' and configure in Vercel as `NEXT_PUBLIC_SUPABASE_JWT_SECRET`
-  if (
-    !token ||
-    !(await jwt.verify(token, process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET!))
-  ) {
+  if (!token || !(await jwt.verify(token, process.env.SUPABASE_JWT_SECRET!))) {
     return NextResponse.redirect("/", 302);
   }
 }
