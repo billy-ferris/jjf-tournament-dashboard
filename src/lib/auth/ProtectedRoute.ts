@@ -59,5 +59,3 @@ export const ProtectedRoute = async ({
     },
   };
 };
-
-export default ProtectedRoute;

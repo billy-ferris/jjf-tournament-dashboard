@@ -4,6 +4,7 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 
 import { AuthProvider } from "../lib/auth";
+import { MessageProvider } from "../lib/message";
 
 const App = ({ Component, pageProps }: AppProps) => (
   <>
@@ -11,9 +12,11 @@ const App = ({ Component, pageProps }: AppProps) => (
       <title>My App</title>
       <meta content="width=device-width, initial-scale=1" name="viewport" />
     </Head>
-    <AuthProvider>
-      <Component {...pageProps} />
-    </AuthProvider>
+    <MessageProvider>
+      <AuthProvider>
+        <Component {...pageProps} />
+      </AuthProvider>
+    </MessageProvider>
   </>
 );
 

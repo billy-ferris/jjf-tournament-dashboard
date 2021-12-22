@@ -14,6 +14,7 @@
     "**/*": "npm run lint"
   },
   "dependencies": {
+    "@heroicons/react": "^1.0.5",
     "@supabase/supabase-js": "^1.28.5",
     "next": "12.0.7",
     "react": "17.0.2",

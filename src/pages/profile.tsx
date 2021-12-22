@@ -2,6 +2,7 @@ import { GetServerSideProps, NextPage } from "next";
 import Link from "next/link";
 import Layout from "../components/Layout";
 import { ProtectedRoute, useAuth } from "../lib/auth";
+import { NextAppPageServerSideProps } from "../types/app";
 
 const ProfilePage: NextPage = (/* props: props from SSR */) => {
   const { user, signOut } = useAuth();
@@ -40,7 +41,9 @@ const ProfilePage: NextPage = (/* props: props from SSR */) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = (context) =>
+export const getServerSideProps: GetServerSideProps = (
+  context
+): Promise<NextAppPageServerSideProps> =>
   ProtectedRoute({
     context,
   });

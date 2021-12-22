@@ -4,6 +4,7 @@ import { client } from "../../client";
 import Router from "next/router";
 import { ROUTE_AUTH, ROUTE_HOME } from "../../config";
 import { UserCredentials } from "@supabase/gotrue-js";
+import { useMessage } from "../message";
 
 export type AuthContextProps = {
   user: User | null;
@@ -28,20 +29,27 @@ export const AuthProvider: FC = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [userLoading, setUserLoading] = useState(true);
   const [loggedIn, setLoggedin] = useState(false);
+  const { handleMessage } = useMessage();
 
   const signIn = async (payload: UserCredentials) => {
     try {
       setLoading(true);
       const { error } = await client.auth.signIn(payload);
       if (error) {
-        alert(error.message);
+        handleMessage({ message: error.message, type: "error" });
       } else {
-        alert("Please check your email for the magic link");
+        handleMessage({
+          message: "Please check your email for the magic link to log in.",
+          type: "success",
+        });
       }
     } catch (error) {
-      alert({
-        message: error,
+      handleMessage({
+        message: "Oops, something went wrong. Please try again.",
+        type: "error",
       });
+      // @ts-ignore
+      console.error(error.error_description || error);
     } finally {
       setLoading(false);
     }

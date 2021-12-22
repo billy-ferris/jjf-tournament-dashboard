@@ -1,6 +1,7 @@
 import { FC } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
+import { MessageList, useMessage } from "../lib/message";
 
 type LayoutProps = {
   usePadding?: boolean;
@@ -8,6 +9,8 @@ type LayoutProps = {
 };
 
 const Layout: FC<LayoutProps> = ({ children, usePadding, useBackdrop }) => {
+  const { messages } = useMessage();
+
   return (
     <>
       <Header />
@@ -16,6 +19,7 @@ const Layout: FC<LayoutProps> = ({ children, usePadding, useBackdrop }) => {
           usePadding && "px-2 sm:px-6 lg:px-8"
         } ${useBackdrop && "bg-gray-200"}`}
       >
+        <MessageList messages={messages} />
         {children}
       </main>
       <Footer />
