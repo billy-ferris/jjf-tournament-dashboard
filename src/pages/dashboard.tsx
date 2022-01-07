@@ -1,27 +1,40 @@
 import { GetServerSideProps, NextPage } from "next";
 import Link from "next/link";
 import Layout from "../components/Layout";
-import { Team, useTeam } from "../lib/store";
+import { Team, useTeam, usePlayer, Player } from "../lib/store";
 import { NextAppPageServerSideProps } from "../types/app";
-import { ProtectedRoute } from "../lib/auth";
+import { ProtectedRoute, useAuth } from "../lib/auth";
 import { useEffect, useState } from "react";
 
 const DashboardPage: NextPage = () => {
   const { teams, teamsLoading, teamLoading, getTeamById } = useTeam();
+  const { players, playersLoading, playerLoading, getPlayerById } = usePlayer();
+  const { user, userLoading, loggedIn } = useAuth();
   const [team, setTeam] = useState<Team | null>(null);
+  const [player, setPlayer] = useState<Player | null>(null);
 
   useEffect(() => {
-    const fetchTeam = async (id: number) => {
-      const team = await getTeamById(id, {
-        withMembers: {
-          enabled: true,
-        },
-      });
-      if (team) setTeam(team);
-    };
+    if (!userLoading && loggedIn) {
+      const fetchData = async () => {
+        if (user) {
+          const player = await getPlayerById(user.id);
 
-    fetchTeam(1).catch(console.error);
-  }, []);
+          if (player) {
+            setPlayer(player);
+
+            const team = await getTeamById(1, {
+              withMembers: {
+                enabled: true,
+              },
+            });
+
+            if (team) setTeam(team);
+          }
+        }
+      };
+      fetchData().catch(console.error);
+    }
+  }, [userLoading, loggedIn]);
 
   return (
     <Layout useBackdrop={false}>
@@ -39,8 +52,24 @@ const DashboardPage: NextPage = () => {
           }`}
         </pre>
         <pre className="my-6">
-          {`Get Team By ID: ${
-            !teamLoading && team ? JSON.stringify(team, null, 2) : "Loading..."
+          {`Get Team of User: ${
+            !teamLoading && team !== null
+              ? JSON.stringify(team, null, 2)
+              : "Loading..."
+          }`}
+        </pre>
+        <pre className="my-6">
+          {`Get All Players: ${
+            !playersLoading && players
+              ? JSON.stringify(players, null, 2)
+              : "Loading..."
+          }`}
+        </pre>
+        <pre className="my-6">
+          {`Get Player Profile of User: ${
+            !playerLoading && player !== null
+              ? JSON.stringify(player, null, 2)
+              : "Loading..."
           }`}
         </pre>
       </div>

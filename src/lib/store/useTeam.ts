@@ -124,7 +124,7 @@ export const useTeam = () => {
 
   const updateTeam = async ({ id, name, captain_id, is_registered }: Team) => {
     try {
-      const fieldsToUpdate = {
+      const rowsToUpdate = {
         name,
         captain_id,
         is_registered,
@@ -133,7 +133,7 @@ export const useTeam = () => {
 
       const { error } = await client
         .from("team")
-        .update(fieldsToUpdate, { returning: "minimal" })
+        .update(rowsToUpdate, { returning: "minimal" })
         .match({ id });
 
       if (error) {
