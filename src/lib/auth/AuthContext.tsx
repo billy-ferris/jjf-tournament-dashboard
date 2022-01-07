@@ -49,7 +49,7 @@ export const AuthProvider: FC = ({ children }) => {
         type: "error",
       });
       // @ts-ignore
-      console.error(error.error_description || error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -75,7 +75,6 @@ export const AuthProvider: FC = ({ children }) => {
       setUser(user);
       setUserLoading(false);
       setLoggedin(true);
-      Router.push(ROUTE_HOME).catch((error) => console.error(error));
     } else {
       setUserLoading(false);
     }
