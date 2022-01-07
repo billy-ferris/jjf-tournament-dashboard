@@ -1,17 +1,27 @@
 import { GetServerSideProps, NextPage } from "next";
 import Link from "next/link";
 import Layout from "../components/Layout";
-import { useTeam } from "../lib/store";
+import { Team, useTeam } from "../lib/store";
 import { NextAppPageServerSideProps } from "../types/app";
-import { ProtectedRoute, useAuth } from "../lib/auth";
+import { ProtectedRoute } from "../lib/auth";
+import { useEffect, useState } from "react";
 
 const DashboardPage: NextPage = () => {
-  const { user } = useAuth();
-  const { teams, teamsLoading, createTeam } = useTeam();
+  const { teams, teamsLoading, teamLoading, getTeamById } = useTeam();
+  const [team, setTeam] = useState<Team | null>(null);
 
-  const handleSubmit = async () => {
-    if (user) await createTeam({ name: "New Team Test", captain_id: user.id });
-  };
+  useEffect(() => {
+    const fetchTeam = async (id: number) => {
+      const team = await getTeamById(id, {
+        withMembers: {
+          enabled: true,
+        },
+      });
+      if (team) setTeam(team);
+    };
+
+    fetchTeam(1).catch(console.error);
+  }, []);
 
   return (
     <Layout useBackdrop={false}>
@@ -21,18 +31,18 @@ const DashboardPage: NextPage = () => {
             Go To Profile
           </button>
         </Link>
-        <pre>
-          {!teamsLoading && teams
-            ? JSON.stringify(teams, null, 2)
-            : "Loading..."}
+        <pre className="my-6">
+          {`Get All Teams: ${
+            !teamsLoading && teams
+              ? JSON.stringify(teams, null, 2)
+              : "Loading..."
+          }`}
         </pre>
-        <button
-          type="button"
-          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          onClick={handleSubmit}
-        >
-          Test Create Team Logic
-        </button>
+        <pre className="my-6">
+          {`Get Team By ID: ${
+            !teamLoading && team ? JSON.stringify(team, null, 2) : "Loading..."
+          }`}
+        </pre>
       </div>
     </Layout>
   );

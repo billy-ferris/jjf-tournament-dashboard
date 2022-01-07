@@ -11,9 +11,16 @@ export type Team = {
   updated_at?: string;
 };
 
+interface TeamResponseConfig {
+  withMembers?: {
+    enabled?: boolean;
+  };
+}
+
 // TODO: use db error code for error message handling
 export const useTeam = () => {
   const [teams, setTeams] = useState<Team[] | null>(null);
+  const [teamLoading, setTeamLoading] = useState(false);
   const [teamsLoading, setTeamsLoading] = useState(false);
   const { handleMessage } = useMessage();
 
@@ -24,13 +31,7 @@ export const useTeam = () => {
     fetchData().catch(console.error);
   }, []);
 
-  const getAllTeams = async ({
-    withMembers,
-  }: {
-    withMembers?: {
-      enabled?: boolean;
-    };
-  } = {}) => {
+  const getAllTeams = async ({ withMembers }: TeamResponseConfig = {}) => {
     try {
       setTeamsLoading(true);
 
@@ -56,6 +57,42 @@ export const useTeam = () => {
       console.error(error);
     } finally {
       setTeamsLoading(false);
+    }
+  };
+
+  const getTeamById = async (
+    id: number,
+    { withMembers }: TeamResponseConfig = {}
+  ) => {
+    try {
+      setTeamLoading(true);
+
+      const withMembersEnabled = withMembers?.enabled ?? false;
+      if (withMembersEnabled) {
+        const { data, error } = await client
+          .from("team")
+          .select(
+            "id, name, captain_id, is_registered, members:profile!inner(id, email, first_name, last_name)"
+          )
+          .match({ id })
+          .single();
+
+        if (error) throw error;
+        return data;
+      } else {
+        const { data, error } = await client
+          .from("team")
+          .select("id, name, captain_id, is_registered")
+          .match({ id })
+          .single();
+
+        if (error) throw error;
+        if (data) return data;
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setTeamLoading(false);
     }
   };
 
@@ -85,12 +122,7 @@ export const useTeam = () => {
     }
   };
 
-  const updateTeam = async ({
-    id,
-    name,
-    captain_id,
-    is_registered,
-  }: Partial<Team>) => {
+  const updateTeam = async ({ id, name, captain_id, is_registered }: Team) => {
     try {
       const fieldsToUpdate = {
         name,
@@ -147,9 +179,11 @@ export const useTeam = () => {
 
   return {
     teams,
+    teamLoading,
     teamsLoading,
     createTeam,
     getAllTeams,
+    getTeamById,
     updateTeam,
     deleteTeam,
   };

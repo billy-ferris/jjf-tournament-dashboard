@@ -19,12 +19,20 @@ const ProfilePage: NextPage = (/* props: props from SSR */) => {
               Howdie, {user && user.email ? user.email : "Explorer"}!
             </p>
             {user && !loading ? (
-              <button
-                onClick={signOut}
-                className="mt-8 block m-auto rounded-md border border-transparent px-5 py-3 bg-indigo-500 text-base font-medium text-white shadow hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:px-10"
-              >
-                Sign Out
-              </button>
+              <div className="flex justify-center mt-8 block m-auto">
+                <Link href={"/dashboard"} passHref>
+                  <button className="rounded-md border border-transparent mx-4 px-5 py-3 bg-indigo-500 text-base font-medium text-white shadow hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:px-10">
+                    Go To Dashboard
+                  </button>
+                </Link>
+                <button
+                  onClick={signOut}
+                  type="button"
+                  className="rounded-md border border-transparent px-5 py-3 bg-indigo-500 text-base font-medium text-white shadow hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:px-10"
+                >
+                  Sign Out
+                </button>
+              </div>
             ) : (
               <p className="max-w-xl mt-5 mx-auto text-xl text-gray-500">
                 You've landed on a protected page. Please{" "}
