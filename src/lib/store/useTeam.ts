@@ -11,6 +11,7 @@ export type Team = {
   updated_at?: string;
 };
 
+// TODO: use db error code for error message handling
 export const useTeam = () => {
   const [teams, setTeams] = useState<Team[] | null>(null);
   const [teamsLoading, setTeamsLoading] = useState(false);
@@ -23,35 +24,34 @@ export const useTeam = () => {
     fetchData().catch(console.error);
   }, []);
 
-  const getAllTeams = async () => {
+  const getAllTeams = async ({
+    withMembers,
+  }: {
+    withMembers?: {
+      enabled?: boolean;
+    };
+  } = {}) => {
     try {
       setTeamsLoading(true);
 
-      const { data, error } = await client
-        .from("team")
-        .select("id, name, captain_id, is_registered");
+      const withMembersEnabled = withMembers?.enabled ?? false;
+      if (withMembersEnabled) {
+        const { data, error } = await client
+          .from("team")
+          .select(
+            "id, name, captain_id, is_registered, members:profile!inner(id, email, first_name, last_name)"
+          );
 
-      if (error) throw error;
-      if (data) setTeams(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setTeamsLoading(false);
-    }
-  };
+        if (error) throw error;
+        if (data) setTeams(data);
+      } else {
+        const { data, error } = await client
+          .from("team")
+          .select("id, name, captain_id, is_registered");
 
-  const getAllTeamsWithMembers = async () => {
-    try {
-      setTeamsLoading(true);
-
-      const { data, error } = await client
-        .from("team")
-        .select(
-          "id, name, captain_id, is_registered, members:profile!inner(id, email, first_name, last_name)"
-        );
-
-      if (error) throw error;
-      if (data) setTeams(data);
+        if (error) throw error;
+        if (data) setTeams(data);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -150,7 +150,6 @@ export const useTeam = () => {
     teamsLoading,
     createTeam,
     getAllTeams,
-    getAllTeamsWithMembers,
     updateTeam,
     deleteTeam,
   };
